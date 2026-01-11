@@ -186,8 +186,6 @@ Ensure MongoDB is running locally:
 
 mongodb://127.0.0.1:27017
 
-yaml
-Copy code
 
 ---
 ### 2️⃣ Start Backend
