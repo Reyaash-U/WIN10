@@ -4,7 +4,8 @@ const EventSchema = new mongoose.Schema({
   type: String,
   impact: Number,
   value: String,
-  timestamp: Date
+  timestamp: Date,
+  videoTime: Number 
 });
 
 const SessionSchema = new mongoose.Schema({

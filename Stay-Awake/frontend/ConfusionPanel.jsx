@@ -13,11 +13,15 @@ export default function ConfusionPanel() {
 
   const { from, to, events } = data.mostConfusingWindow;
 
-  const start = new Date(from);
-  const end = new Date(to);
 
-  const formatTime = (d) =>
-    d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+function formatVideoTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+
 
   return (
     <div style={styles.card}>
@@ -28,9 +32,11 @@ export default function ConfusionPanel() {
       </div>
 
       <div style={styles.row}>
-        <span>⏱️ Session Time</span>
-        <strong>{formatTime(start)} – {formatTime(end)}</strong>
-      </div>
+  <span>⏱ Video Moment</span>
+  <strong>
+    {formatVideoTime(from)} – {formatVideoTime(to)}
+  </strong>
+</div>
 
       <div style={styles.row}>
         <span>🔥 Confusion Signals</span>

@@ -6,6 +6,21 @@ export default function VideoPlayer() {
   const [prompt, setPrompt] = useState(null);
   const lastTimeRef = useRef(0);
 
+  // 🔹 NEW: Send interaction to backend with videoTime
+  const sendEvent = async (type, impact) => {
+    if (!videoRef.current) return;
+
+    await fetch("http://localhost:5000/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type,
+        impact,
+        videoTime: videoRef.current.currentTime // ✅ KEY FIX
+      })
+    });
+  };
+
   const updatePulse = (delta) => {
     setPulse((prev) => {
       const next = Math.max(0, Math.min(100, prev + delta));
@@ -18,12 +33,18 @@ export default function VideoPlayer() {
 
   useEffect(() => {
     const video = videoRef.current;
+    if (!video) return;
 
-    const onPause = () => updatePulse(-5);
+    const onPause = () => {
+      updatePulse(-5);
+      sendEvent("PAUSE", -5); // ✅ SEND WITH VIDEO TIME
+    };
 
     const onTimeUpdate = () => {
+      // Detect rewind
       if (video.currentTime < lastTimeRef.current - 1) {
         updatePulse(-6);
+        sendEvent("REWIND", -6); // ✅ SEND WITH VIDEO TIME
       }
       lastTimeRef.current = video.currentTime;
     };
@@ -45,21 +66,17 @@ export default function VideoPlayer() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         choice,
-        timestamp: new Date()
+        videoTime: videoRef.current.currentTime // ✅ OPTIONAL BUT GOOD
       })
     });
 
     setPrompt(null);
   };
-  const recoverPulseSafely = () => {
-  setPulse((prev) => {
-    // Recover, but not instantly to 100
-    const recovered = Math.min(prev + 10, 75);
-    return recovered;
-  });
-  setPrompt(null);
-};
 
+  const recoverPulseSafely = () => {
+    setPulse((prev) => Math.min(prev + 10, 75));
+    setPrompt(null);
+  };
 
   return (
     <>
@@ -89,7 +106,7 @@ export default function VideoPlayer() {
       {prompt === "REFLECT" && (
         <div className="prompt">
           <p>Quick check — does this make sense?</p>
-          <button onClick={() => recoverPulseSafely()}>👍 Yes</button>
+          <button onClick={recoverPulseSafely}>👍 Yes</button>
           <button onClick={() => updatePulse(-5)}>🤔 Not yet</button>
         </div>
       )}
