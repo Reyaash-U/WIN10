@@ -198,10 +198,14 @@ npm install
 node server.js
 Backend runs on:
 http://localhost:5000
-3️⃣ Start Frontend
+```
 
+### 3️⃣ Start Frontend
+
+```bash
 cd frontend
 npm install
 npm run dev
 Open browser at:
 http://localhost:5173
+```
